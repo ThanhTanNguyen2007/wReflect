@@ -64,7 +64,7 @@ export const addMembersToTeam = async (meId: string, args: addMemberToTeamType) 
         sendMail(
           email,
           `Invite to team ${args.teamId}`,
-          `Someone invite you to team ${memberOwnedTeam?.team.name} - ${args.teamId}`,
+          `${memberOwnedTeam?.user?.nickname} invite you to team ${memberOwnedTeam?.team.name} - ${args.teamId}: ${config?.CLIENT_URL}/invite-link/${args?.teamId}`,
         );
         warnings.push(`We have sent email invite to ${email}`);
 
@@ -72,6 +72,7 @@ export const addMembersToTeam = async (meId: string, args: addMemberToTeamType) 
           data: {
             email: email,
             isRegistered: false,
+            sub: 'temp',
             members: {
               create: {
                 teamId: args.teamId,
@@ -91,6 +92,7 @@ export const addMembersToTeam = async (meId: string, args: addMemberToTeamType) 
 
   if (currentUsers.length > 0) {
     for (let idx = 0; idx < currentUsers.length; idx++) {
+      const email = currentMailsUser[idx];
       try {
         const member = await prisma.member.findUnique({
           where: {
@@ -110,6 +112,12 @@ export const addMembersToTeam = async (meId: string, args: addMemberToTeamType) 
               teamId: args?.teamId,
             },
           });
+          sendMail(
+            email,
+            `Invite to team ${args.teamId}`,
+            `${memberOwnedTeam?.user?.nickname} invite you to team ${memberOwnedTeam?.team.name} - ${args.teamId}: ${config?.CLIENT_URL}/invite-link/${args?.teamId}`,
+          );
+
           success.push(`${currentUsers[idx]?.email} added in this team`);
         }
       } catch (error) {
@@ -193,20 +201,4 @@ export const changeRoleMember = async (meId: string, args: setRoleMemberType) =>
 
   if (!team) return error.NotFound("Can't found a member to change role ");
   return team;
-};
-
-export const updateMeetingNote = async (meId: string, teamId: string, meetingNote: string) => {
-  const member = await prisma.member.update({
-    where: {
-      userId_teamId: {
-        userId: meId,
-        teamId,
-      },
-    },
-    data: {
-      meetingNote,
-    },
-  });
-
-  return member;
 };

@@ -5,19 +5,19 @@ import { Login } from '../Login';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
+  redirectUrl?: string;
   email: null | string;
-  picture: null | string;
 };
 
-const LoginSection = ({ email }: Props) => {
+const LoginSection = ({ email, redirectUrl }: Props) => {
   return (
     <Login isLoggedIn={!!email}>
-      <span  style={{ width: 90 }}>Login</span>
+      <span style={{ width: 90 }}>Login</span>
     </Login>
   );
 };
 
-const Header = ({ email, picture }: Props) => {
+const Header = ({ email, redirectUrl }: Props) => {
   const { t, i18n } = useTranslation();
 
   const [language, setLanguage] = useState<'en' | 'vi'>(i18n?.language as 'en' | 'vi');
@@ -43,7 +43,7 @@ const Header = ({ email, picture }: Props) => {
           </Button>
         </div>
         <div style={{ flexGrow: 1, textAlign: 'right' }}>
-          <LoginSection email={email} picture={picture} />
+          <LoginSection redirectUrl={redirectUrl} email={email} />
         </div>
       </div>
     </div>
